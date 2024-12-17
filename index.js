@@ -19,7 +19,6 @@ const {
 // Paths to files
 const walletsPath = path.join(__dirname, 'wallets.json');
 const proxiesPath = path.join(__dirname, 'proxies.txt');
-const counterPath = path.join(__dirname, 'counter.json');
 
 // Load wallets
 let wallets = [];
@@ -49,17 +48,6 @@ const provider = new ethers.providers.JsonRpcProvider(RPC_URL, {
 
 // Initialize counter
 let consecutiveDays = 0;
-try {
-  if (fs.existsSync(counterPath)) {
-    const counterData = fs.readFileSync(counterPath, 'utf8');
-    consecutiveDays = JSON.parse(counterData).consecutiveDays;
-  } else {
-    consecutiveDays = 0;
-  }
-} catch (error) {
-  console.error(chalk.red('📛 Failed to load counter.json:'), error.message);
-  process.exit(1);
-}
 
 // Function to display the banner
 function displayBanner() {
@@ -112,13 +100,6 @@ async function startClaimingRewards() {
 
   consecutiveDays += 1;
   console.log(chalk.magenta(`🎉 ¡Daily Check-In performed successfully for ${consecutiveDays} consecutive Days for all Wallets!\n`));
-
-  // Save the updated counter
-  try {
-    fs.writeFileSync(counterPath, JSON.stringify({ consecutiveDays }), 'utf8');
-  } catch (error) {
-    console.error(chalk.red('📛 Failed to save counter.json:'), error.message);
-  }
 
   // Wait for 24 hours before next run
   setTimeout(startClaimingRewards, 24 * 60 * 60 * 1000);
