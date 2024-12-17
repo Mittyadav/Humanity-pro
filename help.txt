@@ -1,0 +1,13 @@
+CONFIGURATION STEPS TO USE THIS SCRIPT
+
+1. Get proxies from 2Capthca with the format "login:pass@ip:port" and insert them into the file "proxies.txt" with the format "socks5" example:
+
+socks5://login:password@ip:port
+
+2. Add your wallet and privateKey addresses in the "wallets.json" file listing them with id
+
+3. Run "npm install" from the base directory to install all necessary packages
+
+4. Run the used program "node index.js"
+
+5. Enjoy the execution

@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "wallet": "SET_ADDRESS_HERE",
+        "privateKey": "SET_PRIVATE_KEY_HERE"
+    },
+    {
+        "id": 2,
+        "wallet": "SET_ADDRESS_HERE",
+        "privateKey": "SET_PRIVATE_KEY_HERE"
+    },
+]
