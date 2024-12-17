@@ -19,6 +19,7 @@ const {
 // Paths to files
 const walletsPath = path.join(__dirname, 'wallets.json');
 const proxiesPath = path.join(__dirname, 'proxies.txt');
+const counterPath = path.join(__dirname, 'counter.json');
 
 // Load wallets
 let wallets = [];
@@ -48,6 +49,17 @@ const provider = new ethers.providers.JsonRpcProvider(RPC_URL, {
 
 // Initialize counter
 let consecutiveDays = 0;
+try {
+  if (fs.existsSync(counterPath)) {
+    const counterData = fs.readFileSync(counterPath, 'utf8');
+    consecutiveDays = JSON.parse(counterData).consecutiveDays;
+  } else {
+    consecutiveDays = 0;
+  }
+} catch (error) {
+  console.error(chalk.red('📛 Failed to load counter.json:'), error.message);
+  process.exit(1);
+}
 
 // Function to display the banner
 function displayBanner() {
@@ -61,6 +73,11 @@ function displayBanner() {
   console.log(chalk.green('🙌 Welcome to auto-check-in script for Humanity Protocol\n'));
 }
 
+// Helper function to get a random gas limit between min and max
+function getRandomGasLimit(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 // Function to start claiming daily rewards
 async function startClaimingRewards() {
   for (const wallet of wallets) {
@@ -70,22 +87,38 @@ async function startClaimingRewards() {
     const tx = {
       to: REWARD_CONTRACT,
       data: CLAIM_REWARD_DATA,
-      gasLimit: 100000
+      gasLimit: getRandomGasLimit(200000, 500000)
     };
 
     try {
-      const transaction = await walletInstance.sendTransaction(tx);
-      console.log(chalk.blue(`🚀 [${walletAddress}] Transaction sent. TxHash: ${transaction.hash}`));
+      // Log the claiming process
+      console.log(chalk.green(`\n🔄 Claiming Daily Rewards for Wallet - [${walletAddress}]`));
 
+      // Send the transaction
+      const transaction = await walletInstance.sendTransaction(tx);
+      console.log(chalk.green(`📤 Claiming Tx Sent! - ${TX_EXPLORER}${transaction.hash}`));
+
+      // Wait for the transaction to be confirmed
       const receipt = await transaction.wait();
-      console.log(chalk.green(`✅ [${walletAddress}] Transaction confirmed in block ${receipt.blockNumber}`));
+      console.log(chalk.green(`🔍 Tx Confirmed in Block Number - [${receipt.blockNumber}]\n`));
     } catch (error) {
-      console.error(chalk.red(`❌ [${walletAddress}] Failed to claim reward: ${error.message}`));
+      if (error.code === 'CALL_EXCEPTION') {
+        console.error(chalk.red(`❌ [${walletAddress}] Failed to claim reward: CALL_EXCEPTION\n`));
+      } else {
+        console.error(chalk.red(`❌ [${walletAddress}] Failed to claim reward: ${error.message}\n`));
+      }
     }
   }
 
   consecutiveDays += 1;
-  console.log(chalk.yellow(`📅 Consecutive Days performing check-in for all Wallets: ${consecutiveDays}\n`));
+  console.log(chalk.magenta(`🎉 ¡Daily Check-In performed successfully for ${consecutiveDays} consecutive Days for all Wallets!\n`));
+
+  // Save the updated counter
+  try {
+    fs.writeFileSync(counterPath, JSON.stringify({ consecutiveDays }), 'utf8');
+  } catch (error) {
+    console.error(chalk.red('📛 Failed to save counter.json:'), error.message);
+  }
 
   // Wait for 24 hours before next run
   setTimeout(startClaimingRewards, 24 * 60 * 60 * 1000);
