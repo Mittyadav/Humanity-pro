@@ -6,4 +6,4 @@ I am in the process of adding self-reference, if anyone knows how the authentica
 
 For now, you can enjoy the current features. Read "help.txt" for more details on using the code
 
-If you're not on Humanity Protocol yet you can get started here testnet.humanity.org/login?ref=naeaexeth
+If you're not on Humanity Protocol yet you can get started here testnet.humanity.org/login?ref=
