@@ -57,7 +57,7 @@ function displayBanner() {
   });
 
   console.log(chalk.green(banner));
-  console.log(chalk.green('👑 Script Created by Naeaex'));
+  console.log(chalk.green('👑 Script Created by DARK LIFE'));
   console.log(chalk.green('🙌 Welcome to auto-check-in script for Humanity Protocol\n'));
 }
 
